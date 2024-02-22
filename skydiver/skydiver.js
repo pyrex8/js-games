@@ -119,6 +119,9 @@ G = A.createGain();
 O.type = 'square';
 O.connect(G);
 G.connect(A.destination);
+G.gain.value = 0.2;
+// sound off
+O.frequency.value = 0;
 // user has to click window to enable sound
 
 // sounds

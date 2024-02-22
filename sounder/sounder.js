@@ -1,9 +1,5 @@
 
-a = document.getElementById("canvas");
-
-
-//w = a.width  = window.innerWidth;
-//h = a.height = window.innerHeight;
+B = document.getElementById("canvas");
 
 function canvas_resize()
 {
@@ -14,23 +10,23 @@ function canvas_resize()
 window.addEventListener("resize", canvas_resize);
 canvas_resize();
 
-a.onclick = function()
+B.onclick = function()
 {
     O.start();
 }
 
 /*
- * a = <canvas>
- * b = <body>
- * c = canvas context 2D
- * d = document
- * e =
+ * a =
+ * b = space bar
+ * c = 
+ * d = down
+ * e = 
  * f = frequency of sound
- * g = web gl??????
- * h = height of canvas = 512
+ * g = 
+ * h = height of canvas 
  * i = platform test
  * j = current platform level
- * k =
+ * k = platform offset
  * l = left
  * m = platform pattern 1
  * n = platform pattern 2
@@ -40,9 +36,9 @@ a.onclick = function()
  * r = right
  * s = game high score
  * t = game score
- * u = platform offset
- * v = 255
- * w = width of canvas = 680
+ * u = up
+ * v = 
+ * w = width of canvas
  * x = jumpman X location
  * y = jumpman Y location
  * z = jumpman location 0 to 7
@@ -50,10 +46,10 @@ a.onclick = function()
 
 /*
  * A = audio context for web audio
- * B = 400
+ * B = <canvas>
  * C = 'context'
- * D
- * E
+ * D = 255
+ * E = 512
  * F = reserved
  * G = audio gainModule
  * H = Frequency
@@ -80,9 +76,9 @@ a.onclick = function()
 
 
 // Resize the canvas, storing width and height for later use.
-B = 512
-w = a.width = B;
-h = a.height = B;
+E = 512
+w = B.width = E;
+h = B.height = E;
 
 // Some short-hands for Math and Math.random.
 M=Math;
@@ -114,11 +110,6 @@ function N(T, X, Y)
             .charCodeAt(W*4 +(U>>3)) - 64) & 1<<(U&7)
             && C.F(X * 2 - (U>>3) * 4 + V*16, Y * 2 + (U & 7) * 4, 4, 4);
     }
-
-
-
-        //N(U, X+U*8, Y)
-        //N(Q.charAt(U), X+U*8, Y)
 }
 
 
@@ -152,12 +143,12 @@ function Z(T, Y)
 // z, x, q, i, p, j
 
 // global variables
-I = J = K = P = s = f = m = n = o = z = p = r = l = t = u = q = i = j = 0;
+I = J = K = P = s = f = m = n = o = z = p = r = l = t = k = q = i = j = u = 0;
 n = w
 L = 'fillStyle'
 x = 16
 y = 128
-v = 255
+D = 255
 
 // web audio API to generate sound
 A = new window.AudioContext;
@@ -179,6 +170,16 @@ O.frequency.value = 0;
 
 onkeydown = function(event)
 {
+    // arrow up
+    if (event.keyCode == 38)
+    {
+        u = 1;f = 5
+    }
+    // arrow down
+    if (event.keyCode == 40)
+    {
+        d = 1;f = 5
+    }
     // arrow left
     if (event.keyCode == 37)
     {
@@ -189,22 +190,41 @@ onkeydown = function(event)
     {
         r = 1;f = 5
     }
+    // space bar
+    if (event.keyCode == 32)
+    {
+        b = 1;f = 9
+    }
 }
 
 onkeyup = function(event)
 {
+    // arrow up
+    if (event.keyCode == 38)
+    {
+        u = 0;f = 0
+    }
+    // arrow down
+    if (event.keyCode == 40)
+    {
+        d = 0;f = 0
+    }
     // arrow left
     if (event.keyCode == 37)
     {
-        l = 0;f =0
+        l = 0;f = 0
     }
     // arrow right
     if (event.keyCode == 39)
     {
         r = 0;f = 0
     }
+    // space bar
+    if (event.keyCode == 32)
+    {
+        b = 0;f = 0
+    }
 }
-
 
 function arrow_left()
 {
@@ -212,11 +232,10 @@ function arrow_left()
   if (l)
   {
         x += 4;
-        if (x > v)
-          x = v
+        if (x > D)
+          x = D
   }
 }
-
 
 function arrow_right()
 {
@@ -229,22 +248,21 @@ function arrow_right()
   }
 }
 
-
 function scroll_platforms()
 {
     // platform scrolling
-    u -= 1;
-    if (u < 1)
+    k -= 1;
+    if (k < 1)
     {
-        u = 85;
+        k = 85;
         m = n
         n = o
         o = 0|R()*254;
     }
     //64
-    I = u
-    J = u + 85
-    K = u + 85*2
+    I = k
+    J = k + 85
+    K = k + 85*2
 
     // current level
     j = 0;
@@ -262,11 +280,9 @@ function scroll_platforms()
     }
 }
 
-
-
 function calc_platform_collision()
 {
-  z = (x / 32) & v;
+  z = (x / 32) & D;
 
   // Make sure jumpman is completely off of platform
   // if  q < 0.2 test segment to right z/2
@@ -312,9 +328,9 @@ function set_sound()
   O.frequency.value = f;
   if (f > 10) f = 0
 
-  if ((y < 5) || (y > v))
+  if ((y < 5) || (y > D))
   {
-      y = y & v
+      y = y & D
       if (t > s)
       {
         s = t
@@ -340,7 +356,7 @@ setInterval(function()
     // 3. Render images and sound
     set_sound();
 
-  with(C = a.getContext('2d'))
+  with(C = B.getContext('2d'))
   {
       // Create a shortcut for fillRect
       C.F = fillRect;
