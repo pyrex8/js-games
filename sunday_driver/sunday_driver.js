@@ -18,29 +18,29 @@ B.onclick = function()
  * a =
  * b = space bar
  * c = 
- * d = down
+ * d = 
  * e = 
  * f = frequency of sound
  * g = 
  * h = height of canvas 
  * i = platform test
- * j = current platform level
- * k = platform offset
+ * j = driver
+ * k = 
  * l = left
- * m = platform pattern 1
- * n = platform pattern 2
- * o = platform pattern 3
+ * m = car X accel
+ * n = car Y accel
+ * o = 
  * p = test for level
  * q = last test for level
  * r = right
  * s = game high score
  * t = game score
- * u = up
- * v = 
+ * u = car X location
+ * v = car Y location
  * w = width of canvas
- * x = jumpman X location
- * y = jumpman Y location
- * z = jumpman location 0 to 7
+ * x = driver X location
+ * y = driver Y location
+ * z = 
  */
 
 /*
@@ -52,9 +52,9 @@ B.onclick = function()
  * F = reserved
  * G = audio gainModule
  * H = Frequency
- * I = platform 1 y location
- * J = platform 2 y location
- * K = platform 3 y location
+ * I = road stripes y location
+ * J = X lower limit
+ * K = X upper limit
  * L = 'fillStyle'
  * M = Math
  * N = number
@@ -128,21 +128,21 @@ function S(T, X, Y)
 }
 
 // road stripes drawing routine
-function Z(T, Y)
+function Z(Y)
 {
-  for (U = 8; U--;)
-    (T & (1<<U)) && C.F(512 - 64 - U * 64, Y * 2, 64, 8)
+  for (U = 9; U--;)
+    C.F(256, Y * 2 - 32 + U*64, 4, 32)
 }
 
-// z, x, q, i, p, j
-
 // global variables
-I = J = K = P = s = f = m = n = o = z = p = r = l = t = k = q = i = j = u = 0;
+I = J = K = P = s = f = m = n = o = z = p = r = l = t = k = q = i = j = u = v = 0;
 n = w
 L = 'fillStyle'
 x = 128
 y = 128
 D = 255
+J = 94
+K = 162
 
 // web audio API to generate sound
 A = new window.AudioContext;
@@ -155,12 +155,6 @@ G.gain.value = 0.2;
 // sound off
 O.frequency.value = 0;
 // user has to click window to enable sound
-
-//Space       32 100000
-//arrow left  37 100101
-//arrow up    38 100110
-//arrow right 39 100111
-//arrow down  40 101000 = 1000
 
 onkeydown = function(event)
 {
@@ -202,77 +196,61 @@ onkeyup = function(event)
 
 function arrow_left()
 {
-  //test for ARROW_LEFT
+  //test for ARROW_LEFT = 37;
   if (l)
   {
         x += 4;
-        if (x > D)
-          x = D
+        if (x > K)
+          x = K
   }
 }
 
 function arrow_right()
 {
-  //test for ARROW_RIGHT
+  //test for ARROW_RIGHT = 39;
   if (r)
   {
       x -= 4;
-      if (x<8)
-          x = 8
-  }
-}
-
-
-function space_bar()
-{
-  //test for SPACE_BAR;
-  if (b)
-  {
-
+      if (x < J)
+          x = J
   }
 }
 
 function scroll_road()
 {
     // platform scrolling
-    k -= 1;
-    if (k < 1)
+    I += 1;
+    if (I > 32)
     {
-        k = 85;
-        m = n
-        n = o
-        o = 0|R()*254;
+        I = 1;
     }
-    //64
-    I = k
-    J = k + 85
-    K = k + 85*2
-
-    // current level
-    j = 0;
 }
 
-function calc_platform_collision()
+function car_update()
 {
-  z = (x / 32) & D;
+    // u,v
+    n = -3;
+    if (u > K)
+    {
+        u = K; m = -2;
+    }
 
-  // Make sure jumpman is completely off of platform
-  // if  q < 0.2 test segment to right z/2
-  // if  q > 0.8 test segment to left z*2
-  //
-  q = (x / 32) - z
+    if (u < J)
+    {
+        u = J; m = 2;
+    }
 
-  i = 0
-  p = (j & ( 1 << z))
-  if (p == 0)
-  {
-      if (q < 0.2)
-          i = j & (1 << (z - 1))
-      if (q > 0.8)
-          i = j & (1 << (z + 1))
-  }
+    if (v < 5)
+        v = 255;
+
+    u += m;
+    v += n;
 }
 
+function calc_collision()
+{
+
+}
 
 function score_timer()
 {
@@ -297,18 +275,18 @@ function set_sound()
     }
 }
 
-
 // game loop
 setInterval(function()
 {
     // 1. Process Inputs
     arrow_left();
     arrow_right();
-    space_bar();
+    
 
     // 2. Update Game States
     scroll_road();
-    calc_platform_collision();
+    car_update();
+    calc_collision();
     score_timer();
 
     // 3. Render images and sound
@@ -328,11 +306,9 @@ setInterval(function()
     F(0, 0, w/3, h);
     F(w*2/3, 0, w, h);
 
-      // draw platforms
+      // draw road stripes
       C[L] = 'White';
-      Z(m, I);
-      Z(n, J);
-      Z(o, K);
+      Z(I);
 
       // Draw score
       N(t, 24, 4);
@@ -342,7 +318,8 @@ setInterval(function()
       C[L] = 'Yellow';
       S(P, x, y);
 
-
-
+      // draw player
+      C[L] = 'Red';
+      S(P, u, v);
   }
 }, 50); // 20 frames per second
