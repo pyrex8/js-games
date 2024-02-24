@@ -1,4 +1,3 @@
-
 B = document.getElementById("canvas");
 
 function canvas_resize()
@@ -73,8 +72,6 @@ B.onclick = function()
  * Z = level function
  */
 
-
-
 // Resize the canvas, storing width and height for later use.
 E = 512
 w = B.width = E;
@@ -83,7 +80,6 @@ h = B.height = E;
 // Some short-hands for Math and Math.random.
 M=Math;
 R=M.random;
-
 
 // 0 = '_Q_'
 // 1 = 'P_Q'
@@ -95,7 +91,6 @@ R=M.random;
 // 7 = '_AA'
 // 8 = '_U_'
 // 9 = '_UW'
-
 
 // Print number
 function N(T, X, Y)
@@ -112,7 +107,6 @@ function N(T, X, Y)
     }
 }
 
-
 // Renders sprite type T at X, Y.
 function S(T, X, Y)
 {
@@ -120,11 +114,11 @@ function S(T, X, Y)
   for (V = 8; V--;)
     for (U = 8; U--;)
         // Add pixel width to function
-        // This is a string containing 6 8x8 sprite graphics. One
+        // This is a string containing 8x8 sprite graphics. One
         // character encodes a single 4-pixel row. This allows all
         // to be represented by visable ascii characters: @ABCDEFGHIJKLMNO
         (
-        'MKJELCHAHALCBDAHLCHALCJEIIDBBDBD'
+        'KMOOKMHAHAKMOOCL'
         // Extract the bit we need for the current pixel.
         .charCodeAt(T * 16 + V * 2 + (U>>2)) - 64) & 1<<(U&3)
         // Non zero bits are drawn as visiable pixels
@@ -133,7 +127,7 @@ function S(T, X, Y)
         && C.F(496 - (X * 2 - U * 4), Y * 2 + V * 4 - 32, 4, 4)
 }
 
-// Platform drawer
+// road stripes drawing routine
 function Z(T, Y)
 {
   for (U = 8; U--;)
@@ -146,7 +140,7 @@ function Z(T, Y)
 I = J = K = P = s = f = m = n = o = z = p = r = l = t = k = q = i = j = u = 0;
 n = w
 L = 'fillStyle'
-x = 16
+x = 128
 y = 128
 D = 255
 
@@ -170,16 +164,6 @@ O.frequency.value = 0;
 
 onkeydown = function(event)
 {
-    // arrow up
-    if (event.keyCode == 38)
-    {
-        u = 1;f = 10
-    }
-    // arrow down
-    if (event.keyCode == 40)
-    {
-        d = 1;f = 10
-    }
     // arrow left
     if (event.keyCode == 37)
     {
@@ -199,16 +183,6 @@ onkeydown = function(event)
 
 onkeyup = function(event)
 {
-    // arrow up
-    if (event.keyCode == 38)
-    {
-        u = 0;f = 0
-    }
-    // arrow down
-    if (event.keyCode == 40)
-    {
-        d = 0;f = 0
-    }
     // arrow left
     if (event.keyCode == 37)
     {
@@ -228,7 +202,7 @@ onkeyup = function(event)
 
 function arrow_left()
 {
-  //test for ARROW_LEFT = 37;
+  //test for ARROW_LEFT
   if (l)
   {
         x += 4;
@@ -239,7 +213,7 @@ function arrow_left()
 
 function arrow_right()
 {
-  //test for ARROW_RIGHT = 39;
+  //test for ARROW_RIGHT
   if (r)
   {
       x -= 4;
@@ -248,7 +222,17 @@ function arrow_right()
   }
 }
 
-function scroll_platforms()
+
+function space_bar()
+{
+  //test for SPACE_BAR;
+  if (b)
+  {
+
+  }
+}
+
+function scroll_road()
 {
     // platform scrolling
     k -= 1;
@@ -266,18 +250,6 @@ function scroll_platforms()
 
     // current level
     j = 0;
-    if ((y >= I) & (y <= I + 4))
-    {
-        j = m
-    }
-    if ((y >= J) & (y <= J + 4))
-    {
-        j = n
-    }
-    if ((y >= K) & (y <= K + 4))
-    {
-        j = o
-    }
 }
 
 function calc_platform_collision()
@@ -299,19 +271,6 @@ function calc_platform_collision()
       if (q > 0.8)
           i = j & (1 << (z + 1))
   }
-
-  // on platform
-  if (p || i)
-  {
-      P = 1
-      y--
-  }
-  // off platform
-  else
-  {
-      P = 0
-      y+=3
-  }
 }
 
 
@@ -320,73 +279,6 @@ function score_timer()
     // score (timer)
     t += 0.1;
 }
-
-
-// sounds
-// SOUND_JUMP = 226
-// SOUND_CHUTE = 480 // h =screen height
-// SOUND_SPLAT = 50
-// SOUND_LANDING = 113 // f *= 2; until f>2e5
-// SOUND_PLATFORM = 490
-// SOUND_SCORE1 = 980
-// SOUND_SCORE2 = 1960
-
-// SOUND_THRUSTER = 10
-// SOUND_CRASH = 30 
-
-// SOUND_MOVE = 5
-// SOUND_FALL = 100
-
-
-
-// skydiver
-// }, 40); // 25 frames per second
-// // All sounds except score are blips or bleeps so they only last
-// //one cycle
-// if ((s < 5) || (f>2e5))
-// {
-//     f = 0;
-// }
-// // a score is landing on the platform, the sound goes up in frequency
-// // this just lets it keep on going since it is in audable > 20kHz
-// f *= 2;
-
-// lunar lander
-// }, 200); // 4 frames per second
-// f = 113; // landing
-// f = 10;  // thruster
-// f = 30; // crash
-
-// f--;
-// if (f > 50)
-//   f *= 2;
-
-// if ((f<0) || (f>2e5))
-// {
-//   f =0;
-// }
-
-// platform
-// }, 20); // 50 frames per second
-
-// f = 5 // move
-// f = 100 // fall/fail
-
-// O.frequency.value = f;
-// if (f > 10) f = 0
-
-// if ((y < 5) || (y > D))
-// {
-//     y = y & D
-//     if (t > s)
-//     {
-//       s = t
-//     }
-//     t = 0
-//     f = 100
-// }
-
-
 
 function set_sound()
 {
@@ -403,26 +295,6 @@ function set_sound()
     {
     f =0;
     }
-
-
-
-
-
-
-
-
-//   if (f > 10) f = 0
-
-  if ((y < 5) || (y > D))
-  {
-      y = y & D
-      if (t > s)
-      {
-        s = t
-      }
-      t = 0
-      f = 50
-  }
 }
 
 
@@ -432,9 +304,10 @@ setInterval(function()
     // 1. Process Inputs
     arrow_left();
     arrow_right();
+    space_bar();
 
     // 2. Update Game States
-    scroll_platforms();
+    scroll_road();
     calc_platform_collision();
     score_timer();
 
@@ -450,20 +323,26 @@ setInterval(function()
       C[L] = 'Black';
       F(0, 0, w, h);
 
+    // green grass background
+    C[L] = 'Green';
+    F(0, 0, w/3, h);
+    F(w*2/3, 0, w, h);
+
       // draw platforms
       C[L] = 'White';
       Z(m, I);
       Z(n, J);
       Z(o, K);
 
+      // Draw score
+      N(t, 24, 4);
+      N(s, 196, 4);
+
       // draw player
       C[L] = 'Yellow';
       S(P, x, y);
 
-      // Draw score
-      C[L] = 'Green';
-      N(t, 55, 4);
-      N(s, 167, 4);
+
 
   }
 }, 50); // 20 frames per second
