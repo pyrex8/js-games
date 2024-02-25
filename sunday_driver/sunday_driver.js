@@ -47,8 +47,8 @@ B.onclick = function()
  * A = audio context for web audio
  * B = <canvas>
  * C = 'context'
- * D = 255
- * E = 512
+ * D = scaled pixel (Dot)
+ * E = scaled rectangle
  * F = reserved
  * G = audio gainModule
  * H = Frequency
@@ -60,40 +60,38 @@ B.onclick = function()
  * N = number
  * O = oscillator
  * P = player sprite index
- * Q =
- * R = Random
+ * Q = substring scaled pixel function
+ * R = random
  * S = sprite function
  * T = text
  * U = X loop iterator
  * V = Y loop iterator
- * W = High Score
+ * W = high score
  * X = sprite X location
  * Y = sprite Y location
  * Z = level function
  */
 
 // Resize the canvas, storing width and height for later use.
-E = 512
-w = B.width = E;
-h = B.height = E;
+w = B.width = B.height = 512;
+w = h = B.width / 4;
 
 // Some short-hands for Math and Math.random.
 M=Math;
 R=M.random;
 
-// 0 = '_Q_'
-// 1 = 'P_Q'
-// 2 = 'WU]'
-// 3 = '_UU'
-// 4 = '_DG'
-// 5 = ']UW'
-// 6 = ']U_'
-// 7 = '_AA'
-// 8 = '_U_'
-// 9 = '_UW'
+function E(X, Y, U, V)
+{
+    C.F(X * 4, Y * 4, U * 4, V * 4);
+}
+
+function D(X, Y)
+{
+    E(X, Y, 1, 1);
+}
 
 // Print number
-function N(T, X, Y)
+function N(X, Y, T)
 {
     Q = "00000" + (T | 0);
     Q = Q.substr(Q.length - 6)
@@ -103,12 +101,12 @@ function N(T, X, Y)
         for (U = 8*4; U--;)
             ('@_Q_@P_Q@WU]@_UU@_DG@]UW@]U_@_AA@_U_@_UW@'
             .charCodeAt(W*4 +(U>>3)) - 64) & 1<<(U&7)
-            && C.F(X * 2 - (U>>3) * 4 + V*16, Y * 2 + (U & 7) * 4, 4, 4);
+            && D(X - (U>>3) + V * 4 + 3, Y + (U & 7));
     }
 }
 
 // Renders sprite type T at X, Y.
-function S(T, X, Y)
+function S(X, Y, T)
 {
   // Loop over the pixels in the image.
   for (V = 8; V--;)
@@ -124,25 +122,24 @@ function S(T, X, Y)
         // Non zero bits are drawn as visiable pixels
         // few units of the coords in order to center the image on the
         // given x,y. (context.F is context.fillRect)
-        && C.F(496 - (X * 2 - U * 4), Y * 2 + V * 4 - 32, 4, 4)
+        && D(X - U + 7, Y + V);
 }
 
 // road stripes drawing routine
 function Z(Y)
 {
   for (U = 9; U--;)
-    C.F(256, Y * 2 - 32 + U*64, 4, 32)
+    C.F(256, Y * 4 - 32 + U*64, 4, 32);
 }
 
 // global variables
 I = J = K = P = s = f = m = n = o = z = p = r = l = t = k = q = i = j = u = v = 0;
-n = w
+n = w;
 L = 'fillStyle'
-x = 128
-y = 128
-D = 255
-J = 94
-K = 162
+x = 64
+y = 64
+J = 44
+K = 76
 
 // web audio API to generate sound
 A = new window.AudioContext;
@@ -196,31 +193,31 @@ onkeyup = function(event)
 
 function arrow_left()
 {
-  //test for ARROW_LEFT = 37;
-  if (l)
-  {
-        x += 4;
-        if (x > K)
-          x = K
-  }
+    //test for ARROW_LEFT = 37;
+    if (l)
+    {
+        x -= 4;
+        if (x < J)
+            x = J
+    }
 }
 
 function arrow_right()
 {
-  //test for ARROW_RIGHT = 39;
-  if (r)
-  {
-      x -= 4;
-      if (x < J)
-          x = J
-  }
+    //test for ARROW_RIGHT = 39;
+    if (r)
+    {
+        x += 4;
+        if (x > K)
+            x = K
+    }
 }
 
 function scroll_road()
 {
     // platform scrolling
     I += 1;
-    if (I > 32)
+    if (I > 16)
     {
         I = 1;
     }
@@ -240,8 +237,8 @@ function car_update()
         u = J; m = 2;
     }
 
-    if (v < 5)
-        v = 255;
+    if (v < -8)
+        v = 128;
 
     u += m;
     v += n;
@@ -299,27 +296,35 @@ setInterval(function()
 
       // draw background
       C[L] = 'Black';
-      F(0, 0, w, h);
+      E(0, 0, w, h);
 
     // green grass background
     C[L] = 'Green';
-    F(0, 0, w/3, h);
-    F(w*2/3, 0, w, h);
+    E(0, 0, w/3, h);
+    E(w*2/3, 0, w, h);
 
       // draw road stripes
       C[L] = 'White';
       Z(I);
 
       // Draw score
-      N(t, 24, 4);
-      N(s, 196, 4);
+      N(10, 4, t);
+      N(96, 4, s);
 
       // draw player
       C[L] = 'Yellow';
-      S(P, x, y);
+      S(x, y, P);
 
       // draw player
       C[L] = 'Red';
-      S(P, u, v);
+      S(u, v, P);
+
+
+      // collision points
+      C[L] = 'Blue';
+      D(x, y)
+      D(x + 7, y + 7)
+      D(u, v)
+      D(u + 7, v + 7)
   }
 }, 50); // 20 frames per second
