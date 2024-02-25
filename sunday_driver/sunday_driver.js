@@ -90,7 +90,7 @@ function D(X, Y)
     E(X, Y, 1, 1);
 }
 
-// Print number
+// Print number T at X, Y.
 function N(X, Y, T)
 {
     Q = "00000" + (T | 0);
@@ -108,32 +108,23 @@ function N(X, Y, T)
 // Renders sprite type T at X, Y.
 function S(X, Y, T)
 {
-  // Loop over the pixels in the image.
-  for (V = 8; V--;)
-    for (U = 8; U--;)
-        // Add pixel width to function
-        // This is a string containing 8x8 sprite graphics. One
-        // character encodes a single 4-pixel row. This allows all
-        // to be represented by visable ascii characters: @ABCDEFGHIJKLMNO
-        (
-        'KMOOKMHAHAKMOOCL'
-        // Extract the bit we need for the current pixel.
-        .charCodeAt(T * 16 + V * 2 + (U>>2)) - 64) & 1<<(U&3)
-        // Non zero bits are drawn as visiable pixels
-        // few units of the coords in order to center the image on the
-        // given x,y. (context.F is context.fillRect)
-        && D(X - U + 7, Y + V);
+    for (V = 8; V--;)
+        for (U = 8; U--;)
+            ('KMOOKMHAHAKMOOCL'
+            .charCodeAt(T * 16 + V * 2 + (U>>2)) - 64) & 1<<(U&3)
+            && D(X - U + 7, Y + V);
 }
 
 // road stripes drawing routine
 function Z(Y)
 {
-  for (U = 9; U--;)
-    C.F(256, Y * 4 - 32 + U*64, 4, 32);
+    for (U = 9; U--;)
+        C.F(256, Y * 4 - 32 + U*64, 4, 32);
 }
 
 // global variables
-I = J = K = P = s = f = m = n = o = z = p = r = l = t = k = q = i = j = u = v = 0;
+I = J = K = P = 0;
+s = f = m = n = o = z = p = r = l = t = k = q = i = j = u = v = 0;
 n = w;
 L = 'fillStyle'
 x = 64
@@ -157,38 +148,24 @@ onkeydown = function(event)
 {
     // arrow left
     if (event.keyCode == 37)
-    {
-        l = 1;f = 10
-    }
+        l = 1;
+
     // arrow right
     if (event.keyCode == 39)
-    {
-        r = 1;f = 10
-    }
-    // space bar
-    if (event.keyCode == 32)
-    {
-        b = 1;f = 480
-    }
+        r = 1;
+
 }
 
 onkeyup = function(event)
 {
     // arrow left
     if (event.keyCode == 37)
-    {
-        l = 0;f = 0
-    }
+        l = 0;
+
     // arrow right
     if (event.keyCode == 39)
-    {
-        r = 0;f = 0
-    }
-    // space bar
-    if (event.keyCode == 32)
-    {
-        b = 0;f = 0
-    }
+        r = 0;
+
 }
 
 function arrow_left()
@@ -198,7 +175,7 @@ function arrow_left()
     {
         x -= 4;
         if (x < J)
-            x = J
+            x = J;
     }
 }
 
@@ -209,7 +186,7 @@ function arrow_right()
     {
         x += 4;
         if (x > K)
-            x = K
+            x = K;
     }
 }
 
@@ -218,9 +195,7 @@ function scroll_road()
     // platform scrolling
     I += 1;
     if (I > 16)
-    {
         I = 1;
-    }
 }
 
 function car_update()
@@ -246,7 +221,14 @@ function car_update()
 
 function calc_collision()
 {
-
+    // f = 480
+    // f = 10
+    // // collision points
+    // C[L] = 'Blue';
+    // D(x, y)
+    // D(x + 7, y + 7)
+    // D(u, v)
+    // D(u + 7, v + 7)
 }
 
 function score_timer()
@@ -257,19 +239,17 @@ function score_timer()
 
 function set_sound()
 {
-  //set sound frequency
-  O.frequency.value = f;
+    //set sound frequency
+    O.frequency.value = f;
 
     if (f > 400)
-    f *=2;
+        f *=2;
 
     if (f < 100)
-    f--;
+        f--;
 
     if ((f<0) || (f>2000))
-    {
-    f =0;
-    }
+        f =0;
 }
 
 // game loop
@@ -278,7 +258,6 @@ setInterval(function()
     // 1. Process Inputs
     arrow_left();
     arrow_right();
-    
 
     // 2. Update Game States
     scroll_road();
@@ -289,42 +268,34 @@ setInterval(function()
     // 3. Render images and sound
     set_sound();
 
-  with(C = B.getContext('2d'))
-  {
-      // Create a shortcut for fillRect
-      C.F = fillRect;
+    with(C = B.getContext('2d'))
+    {
+        // Create a shortcut for fillRect
+        C.F = fillRect;
 
-      // draw background
-      C[L] = 'Black';
-      E(0, 0, w, h);
+        // draw background
+        C[L] = 'Black';
+        E(0, 0, w, h);
 
-    // green grass background
-    C[L] = 'Green';
-    E(0, 0, w/3, h);
-    E(w*2/3, 0, w, h);
+        // green grass background
+        C[L] = 'Green';
+        E(0, 0, w/3, h);
+        E(w*2/3, 0, w, h);
 
-      // draw road stripes
-      C[L] = 'White';
-      Z(I);
+        // draw road stripes
+        C[L] = 'White';
+        Z(I);
 
-      // Draw score
-      N(10, 4, t);
-      N(96, 4, s);
+        // Draw score
+        N(10, 4, t);
+        N(96, 4, s);
 
-      // draw player
-      C[L] = 'Yellow';
-      S(x, y, P);
+        // draw player
+        C[L] = 'Yellow';
+        S(x, y, P);
 
-      // draw player
-      C[L] = 'Red';
-      S(u, v, P);
-
-
-      // collision points
-      C[L] = 'Blue';
-      D(x, y)
-      D(x + 7, y + 7)
-      D(u, v)
-      D(u + 7, v + 7)
-  }
+        // draw player
+        C[L] = 'Red';
+        S(u, v, P);
+    }
 }, 50); // 20 frames per second
