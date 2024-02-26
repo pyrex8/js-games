@@ -79,12 +79,13 @@ canvas_resize();
 w = a.width = 512;
 h = a.height = 512;
 
-x = y = k = t = 0;
+y = k = t = 0;
+x = 1
 L = 'fillStyle';
 D = [];
 R = [];
 r = [];
-z = 64;
+z = 8*4;
 n = 200;
 m = 140;
 
@@ -94,19 +95,9 @@ s[0] = 'Royalblue'; // background color
 s[1] = 'Yellow'; // sprite color
 
 // example sprite data 
-// space ship
-o = '@@DEDELGLGHC@A@@';
+// blank
+o = '@_Q_';
 u = o;
-// invader '@@DEDELGLGHC@A@@'
-// bomb '@@HB@AHCHCHC@A@@'
-// fat bomb 'HC@AHCLGLGLGHC@@'
-// ghost '@@HCDELGLGLGDE@@'
-// skydiver landing 'MKJELCHAHALCBDAH'
-// skydiver standing 'LCHALCJEIIDBBDBD'
-// parachute '@@@@LCNGNGOOOOAH'
-// plane 'LIHHNONOH@LA@@@@'
-// spaceship '@@@A@AHCLGLGDEDD'
-
 
 // 0 = '_Q_'
 // 1 = 'P_Q'
@@ -123,18 +114,13 @@ u = o;
 // '_UW@_U_@_AA@]U_@]UW@_DG@_UU@WU]@P_Q@_Q_'
 N = '_Q_P_QWU]_UU_DG]UW]U__AA_U__UW'
 
-
-
-// Renders sprite type T at X, Y with width P and Height Q.
-
-function S(T, X, Y) 
+function S(X, Y, T) 
 {
   for (U = 8*4; U--;)
-        ('@_Q_@P_Q@WU]@_UU@_DG@]UW@]U_@_AA@_U_@_UW@'.charCodeAt(T*4 +(U>>3)) - z) & 1<<(U&7) 
+        ('@_Q_@P_Q@WU]@_UU@_DG@]UW@]U_@_AA@_U_@_UW@'
+        .charCodeAt(T*4 +(U>>3)) - 64) & 1<<(U&7) 
         && C.F(X * 2 - (U>>3) * 4, Y * 2 + (U & 7) * 4, 4, 4);
 }
-
-
 
 onkeydown = function(event) 
 {
@@ -150,34 +136,6 @@ setInterval(function()
     C.F = fillRect;
  
     t^=1;
-
-    // undo
-    //test for u = 85;
-    if (k == 85)
-    {
-        o = u;
-    }    
-
-    // mirror
-    //test for m = 77;
-    if (k == 77)
-    {
-        e = o.match(/(..?)/g);
-        q = e.reverse();
-        o = q.join("");
-    }    
-
-    // rotate
-    //test for r = 82;
-    if (k == 82)
-    {
-        for (U = 16; U--;)
-        {
-            P = U*4;
-            r[U] = String.fromCharCode(z+R[P]+R[P+1]*2 + R[P+2]*4 + R[P+3]*8);
-        }
-        o = r.join("");
-    }    
 
     //test for c = 67;
     if (k == 67)
@@ -198,38 +156,40 @@ setInterval(function()
     // Yellow
     C[L] = s[1];
     // block for grid
-    F(n-1, m-1 ,129, 129);
+    F(64 + n-1, m-1 ,49, 81);
 
-    // '@@HB@AHCHCHC@A@@'
-    // '@@H@@AH@H@H@@@@@',
-    S(0, 30, 30) 
-    S(1, 30, 50)
-    S(2, 30, 70)
-    S(3, 30, 90)
+    S(30, 30, 0) 
+    S(30, 50, 1)
+    S(30, 70, 2)
+    S(30, 90, 3)
 
     // display sprite data
     fillText('data = '+o, 200, 320);
 
     // display instructions
-//  fillText('SPRITE EDITOR: arrows, space, (m)irror, (r)otate, (c)lipboard, (e)rase, (f)ill, (u)ndo', 100, 100);
+//  fillText('SPRITE EDITOR: arrows, space, (c)lipboard, (e)rase, (f)ill, (u)ndo', 100, 100);
 
     for (U = z; U--;)
     {
-        q = U&7;
-        p = U>>3; 
-        i = U&3;
-        j = U>>2;
-        D[U] = ((o.charCodeAt(j) - z) & (1<<i))>>i;
+        p = U&7;
+        q = U>>3; 
+        i = U&7;
+        j = U>>3;
+        D[U] = ((o.charCodeAt(j) - 64) & (1<<i))>>i;
         // Rotated version of data
-        R[p+q*8] = D[U];
         C[L] = s[D[U]];
         // draw sprite
         F(420 + (7- q) * 4, 185 + p * 4, 4, 4);
         // array of squares
-        F(n + (7-q) * 16, m + p * 16, 15, 15);
+        F(n + (7 - q) * 16, m + p * 16, 15, 15);
     }
-        
-    C[L] = s[t];            
+
+    // for (U = 8*4; U--;)
+    //     ('@_Q_@P_Q@WU]@_UU@_DG@]UW@]U_@_AA@_U_@_UW@'
+    //     .charCodeAt(T*4 +(U>>3)) - 64) & 1<<(U&7) 
+    //     && C.F(X * 2 - (U>>3) * 4, Y * 2 + (U & 7) * 4, 4, 4);
+
+    C[L] = s[t];
 
     // cursor x and y
     F(n + (7-x)*16, m + y*16,15, 15);
@@ -237,31 +197,39 @@ setInterval(function()
    //test for ARROW_LEFT = 37;
     if (k == 37)
     {   
-        x = (x+1)&7;
+        x -= 1
+        if (x < 1)
+            x = 3
     }
     
     //test for ARROW_RIGHT = 39;
     if (k == 39)
     {   
-        x = (x-1)&7;
+        x += 1
+        if (x > 3)
+            x = 1
     } 
     
     //test for ARROW_UP = 38;
     if (k == 38)
-    {   
-        y= (y-1)&7;
+    {
+        y -= 1
+        if (y < 0)
+            y = 4
     }
     
     //test for ARROW_DOWN = 40;
     if (k == 40)
     {   
-        y = (y+1)&7;
-    }        
+        y += 1
+        if (y > 4)
+            y = 0
+    }
 
     //test for SPACE_BAR = 32;
     if (k == 32)
     {
-        D[x+y*8] ^= 1;
+        D[x*8+y] ^= 1;
     }  
 
     // erase all
@@ -282,12 +250,33 @@ setInterval(function()
             D[U] = 1;
     }
 
-      
     k = 0;
 
+    // zero out D[U] 6,7,14,15,22,23,30,31
+    D[0] = 0
+    D[1] = 0
+    D[2] = 0
+    D[3] = 0
+    D[4] = 0
+    D[5] = 0
+    D[6] = 0
+    D[7] = 0
+
+    D[13] = 0
+    D[14] = 0
+    D[15] = 0
+
+    D[21] = 0
+    D[22] = 0
+    D[23] = 0
+
+    D[29] = 0
+    D[30] = 0
+    D[31] = 0
+
     for (U = z; U--;)
-        o = o.substr(0, U>>2) + String.fromCharCode((o.charCodeAt(U>>2)& ((~1)<<(U&3))) | z | (D[U]<<(U&3))) + o.substr((U>>2) + 1);
-
-
+        o = o.substr(0, U>>3) + 
+        String.fromCharCode((o.charCodeAt(U>>3) & ((~1)<<(U&7))) | 64 | (D[U]<<(U&7))) +
+        o.substr((U>>3) + 1);
   }
 }, 250); // 4 frames per second
