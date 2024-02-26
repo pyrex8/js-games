@@ -21,7 +21,7 @@ B.onclick = function()
  * d = 
  * e = 
  * f = frequency of sound
- * g = 
+ * g = game state
  * h = height of canvas 
  * i = platform test
  * j = driver
@@ -40,7 +40,7 @@ B.onclick = function()
  * w = width of canvas
  * x = driver X location
  * y = driver Y location
- * z = 
+ * z = road stripes y location
  */
 
 /*
@@ -51,8 +51,8 @@ B.onclick = function()
  * E = scaled rectangle
  * F = reserved
  * G = audio gainModule
- * H = Frequency
- * I = road stripes y location
+ * H = number
+ * I = string
  * J = X lower limit
  * K = X upper limit
  * L = 'fillStyle'
@@ -90,10 +90,10 @@ function D(X, Y)
     E(X, Y, 1, 1);
 }
 
-// Print number T at X, Y.
-function N(X, Y, T)
+// Print number H at X, Y.
+function N(X, Y, H)
 {
-    Q = "00000" + (T | 0);
+    Q = "00000" + (H | 0);
     Q = Q.substr(Q.length - 6)
     for (V = 6; V--;)
     {
@@ -105,13 +105,56 @@ function N(X, Y, T)
     }
 }
 
-// Renders sprite type T at X, Y.
-function S(X, Y, T)
+// A = '_Q_'
+// B = 'P_Q'
+// C = 'WU]'
+// D = '_UU'
+// E = '_DG'
+// F = ']UW'
+// G = ']U_'
+// H = '_AA'
+// I = '_U_'
+// J = '_UW'
+// K = '_UW'
+// L = '_UW'
+// M = '_UW'
+// N = '_UW'
+// O = '_UW'
+// P = '_UW'
+// Q = '_UW'
+// R = '_UW'
+// S = '_UW'
+// T = '_UW'
+// U = '_UW'
+// V = '_UW'
+// W = '_UW'
+// X = '_UW'
+// Y = '_UW'
+// Z = '_UW'
+
+// Print string I at X, Y.
+function T(X, Y, I)
+{
+    Q = I.length
+    for (V = Q; V--;)
+    {
+        W = I.charCodeAt(V) - 64;
+        for (U = 8*4; U--;)
+            ('@_Q_@P_Q@WU]@_UU@_DG@]UW@]U_@_AA@_U_@_UW@'
+            .charCodeAt(W*4 +(U>>3)) - 64) & 1<<(U&7)
+            && D(X - (U>>3) + V * 4 + 3, Y + (U & 7));
+    }
+}
+
+
+
+// Renders sprite type H at X, Y.
+function S(X, Y, H)
 {
     for (V = 8; V--;)
         for (U = 8; U--;)
             ('KMOOKMHAHAKMOOCL'
-            .charCodeAt(T * 16 + V * 2 + (U>>2)) - 64) & 1<<(U&3)
+            .charCodeAt(H * 16 + V * 2 + (U>>2)) - 64) & 1<<(U&3)
             && D(X - U + 7, Y + V);
 }
 
@@ -123,9 +166,8 @@ function Z(Y)
 }
 
 // global variables
-I = J = K = P = 0;
-s = f = m = n = o = z = p = r = l = t = k = q = i = j = u = v = 0;
-n = w;
+J = K = P = 0;
+s = f = m = n = o = z = p = r = l = t = k = q = i = j = u = v = g = z = 0;
 L = 'fillStyle'
 x = 64
 y = 64
@@ -148,24 +190,38 @@ onkeydown = function(event)
 {
     // arrow left
     if (event.keyCode == 37)
+    {
         l = 1;
+    }
+ 
 
     // arrow right
     if (event.keyCode == 39)
+    {
         r = 1;
+    }
 
+    // space
+    if (event.keyCode == 32)
+        if (g != 1)
+        {
+            g = 1;
+        }
 }
 
 onkeyup = function(event)
 {
     // arrow left
     if (event.keyCode == 37)
+    {
         l = 0;
+    }
 
     // arrow right
     if (event.keyCode == 39)
+    {
         r = 0;
-
+    }
 }
 
 function arrow_left()
@@ -173,7 +229,7 @@ function arrow_left()
     //test for ARROW_LEFT = 37;
     if (l)
     {
-        x -= 4;
+        x -= 1;
         if (x < J)
             x = J;
     }
@@ -184,7 +240,7 @@ function arrow_right()
     //test for ARROW_RIGHT = 39;
     if (r)
     {
-        x += 4;
+        x += 1;
         if (x > K)
             x = K;
     }
@@ -193,48 +249,68 @@ function arrow_right()
 function scroll_road()
 {
     // platform scrolling
-    I += 1;
-    if (I > 16)
-        I = 1;
+    z += 1;
+    if (z > 16)
+        z = 1;
 }
 
 function car_update()
 {
     // u,v
-    n = -3;
+    n = -2;
     if (u > K)
     {
-        u = K; m = -2;
+        u = K;
+        m = -3;
+        f = 10;
     }
 
     if (u < J)
     {
-        u = J; m = 2;
+        u = J;
+        m = 3;
+        f = 10;
     }
 
     if (v < -8)
+    {
         v = 128;
+        t +=1
+    }
 
-    u += m;
-    v += n;
+    u += R() * m;
+    v += R() * n;
 }
 
 function calc_collision()
 {
-    // f = 480
-    // f = 10
     // // collision points
     // C[L] = 'Blue';
     // D(x, y)
     // D(x + 7, y + 7)
     // D(u, v)
     // D(u + 7, v + 7)
+
+    if ((v >= y - 7) && (v <= y + 7))
+        if ((u >= x - 7) && (u <= x + 7))
+        {
+            v -= 4 * n
+            y -= 1
+            if (y < 1)
+            {
+                g = 0;
+            }
+        }
+    // f = 480
 }
 
-function score_timer()
+function score()
 {
     // score (timer)
-    t += 0.1;
+    if (t > s)
+    {
+        s = t;
+    }
 }
 
 function set_sound()
@@ -255,16 +331,19 @@ function set_sound()
 // game loop
 setInterval(function()
 {
-    // 1. Process Inputs
-    arrow_left();
-    arrow_right();
+    if (g == 1)
+    {
+        // 1. Process Inputs
+        arrow_left();
+        arrow_right();
 
-    // 2. Update Game States
-    scroll_road();
-    car_update();
-    calc_collision();
-    score_timer();
+        // 2. Update Game States
+        scroll_road();
+        car_update();
+        calc_collision();
+    }
 
+    score();
     // 3. Render images and sound
     set_sound();
 
@@ -284,11 +363,16 @@ setInterval(function()
 
         // draw road stripes
         C[L] = 'White';
-        Z(I);
+        Z(z);
 
         // Draw score
         N(10, 4, t);
         N(96, 4, s);
+
+        if (g == 0)
+        {
+            T(32, 32, 'ABCDEF');
+        }
 
         // draw player
         C[L] = 'Yellow';
@@ -298,4 +382,4 @@ setInterval(function()
         C[L] = 'Red';
         S(u, v, P);
     }
-}, 50); // 20 frames per second
+}, 20); // 50 frames per second
