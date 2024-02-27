@@ -52,18 +52,18 @@ canvas_resize();
  * F = reserved
  * G = audio gainModule
  * H = Frequency
- * I
+ * I = sprite index
  * J
  * K = copy to clipboard function
  * L = 'fillStyle'
  * M = Math
- * N
+ * N = string of characters
  * O = oscillator
  * P = sprite width multiplier
  * Q = sprite height multiplier
  * R = Random
  * S = String
- * T = sprite index
+ * T = 
  * U = X loop iterator
  * V = Y loop iterator
  * W = X nibble loop iterator
@@ -99,28 +99,59 @@ s[1] = 'Yellow'; // sprite color
 o = '@_Q_';
 u = o;
 
-// 0 = '_Q_'
-// 1 = 'P_Q'
-// 2 = 'WU]'
-// 3 = '_UU'
-// 4 = '_DG'
-// 5 = ']UW'
-// 6 = ']U_'
-// 7 = '_AA'
-// 8 = '_U_'
-// 9 = '_UW'
+N = '@_Q_'+ //0
+    '@P_Q'+ //1
+    '@WU]'+ //2
+    '@_UU'+ //3
+    '@_DG'+ //4
+    '@]UW'+ //5
+    '@]U_'+ //6
+    '@_AA'+ //7
+    '@_U_'+ //8
+    '@_UW'  //9
 
-//   9   8   7   6   5   4   3   2   1   0     
-// '_UW@_U_@_AA@]U_@]UW@_DG@_UU@WU]@P_Q@_Q_'
-N = '_Q_P_QWU]_UU_DG]UW]U__AA_U__UW'
 
-function S(X, Y, T) 
+J = '@_E_'+ //A
+    '@[U_'+ //B
+    '@QQN'+ //C
+    '@^Q_'+ //D
+    '@QU_'+ //E
+    '@AE_'+ //F
+    '@]Q^'+ //G
+    '@_D_'+ //H
+    '@Q_Q'+ //I
+    '@A_Q'+ //J
+    '@[D_'+ //K
+    '@PP_'+ //L
+    '@_C_'+ //M
+    '@^A_'+ //N
+    '@OQ^'+ //O
+    '@GE_'+ //P
+    '@VYN'+ //Q
+    '@[E_'+ //R
+    '@MUV'+ //S
+    '@A_A'+ //T
+    '@_PO'+ //U
+    '@OPO'+ //V
+    '@_X_'+ //W
+    '@[D['+ //X
+    '@_TW'+ //Y
+    '@SUY'  //Z
+
+// Print string I at X, Y.
+function S(X, Y, I)
 {
-  for (U = 8*4; U--;)
-        ('@_Q_@P_Q@WU]@_UU@_DG@]UW@]U_@_AA@_U_@_UW@'
-        .charCodeAt(T*4 +(U>>3)) - 64) & 1<<(U&7) 
-        && C.F(X * 2 - (U>>3) * 4, Y * 2 + (U & 7) * 4, 4, 4);
+    Q = I.length
+    for (V = Q; V--;)
+    {
+        W = I.charCodeAt(V) - 65;
+        for (U = 8*4; U--;)
+            (J
+            .charCodeAt(W*4 +(U>>3)) - 64) & 1<<(U&7)
+            && C.F(X * 2 - (U>>3) * 4 + V*16, Y * 2 + (U & 7) * 4, 4, 4);
+    }
 }
+
 
 onkeydown = function(event) 
 {
@@ -158,10 +189,7 @@ setInterval(function()
     // block for grid
     F(64 + n-1, m-1 ,49, 81);
 
-    S(30, 30, 0) 
-    S(30, 50, 1)
-    S(30, 70, 2)
-    S(30, 90, 3)
+    S(30, 30, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') 
 
     // display sprite data
     fillText('data = '+o, 200, 320);
@@ -196,18 +224,18 @@ setInterval(function()
  
    //test for ARROW_LEFT = 37;
     if (k == 37)
-    {   
-        x -= 1
-        if (x < 1)
-            x = 3
+    {
+        x += 1
+        if (x > 3)
+            x = 1
     }
     
     //test for ARROW_RIGHT = 39;
     if (k == 39)
-    {   
-        x += 1
-        if (x > 3)
-            x = 1
+    {
+        x -= 1
+        if (x < 1)
+            x = 3
     } 
     
     //test for ARROW_UP = 38;
