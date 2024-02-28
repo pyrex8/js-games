@@ -99,7 +99,23 @@ s[1] = 'Yellow'; // sprite color
 o = '@_Q_';
 u = o;
 
-N = '@_Q_'+ //0
+J = '@@@@'+ //SPACE
+    '@@W@'+ //!
+    '@C@C'+ //"
+    '@_J_'+ //#
+    '@M_K'+ //$
+    '@SDY'+ //%
+    '@XU^'+ //&
+    '@@AB'+ //'
+    '@@QN'+ //(
+    '@NQ@'+ //)
+    '@UNU'+ //*
+    '@DND'+ //+
+    '@@HP'+ //,
+    '@DDD'+ //-
+    '@@H@'+ //.
+    '@ANP'+ ///
+    '@_Q_'+ //0
     '@P_Q'+ //1
     '@WU]'+ //2
     '@_UU'+ //3
@@ -108,10 +124,15 @@ N = '@_Q_'+ //0
     '@]U_'+ //6
     '@_AA'+ //7
     '@_U_'+ //8
-    '@_UW'  //9
-
-
-J = '@_E_'+ //A
+    '@_UW'+ //9
+    '@@J@'+ //:
+    '@@JP'+ //;
+    '@QJD'+ //<
+    '@JJJ'+ //=
+    '@DJQ'+ //>
+    '@GUA'+ //?
+    '@VQN'+ //@
+    '@_E_'+ //A
     '@[U_'+ //B
     '@QQN'+ //C
     '@^Q_'+ //D
@@ -136,7 +157,13 @@ J = '@_E_'+ //A
     '@_X_'+ //W
     '@[D['+ //X
     '@_TW'+ //Y
-    '@SUY'  //Z
+    '@SUY'+ //Z
+    '@@Q_'+ //[
+    '@PNA'+ //\
+    '@_Q@'+ //]
+    '@BAB'+ //^
+    '@PPP'+ //_
+    '@BA@'  //`
 
 // Print string I at X, Y.
 function S(X, Y, I)
@@ -144,7 +171,7 @@ function S(X, Y, I)
     Q = I.length
     for (V = Q; V--;)
     {
-        W = I.charCodeAt(V) - 65;
+        W = I.charCodeAt(V) - 32;
         for (U = 8*4; U--;)
             (J
             .charCodeAt(W*4 +(U>>3)) - 64) & 1<<(U&7)
@@ -189,7 +216,10 @@ setInterval(function()
     // block for grid
     F(64 + n-1, m-1 ,49, 81);
 
-    S(30, 30, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') 
+    S(30, 6, ' !\"#$%&\'()*+,-.0123456789')
+    S(30, 20, ':;<=>?@')
+    S(30, 34, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+    S(30, 48, '[\\]^_`')
 
     // display sprite data
     fillText('data = '+o, 200, 320);

@@ -105,32 +105,71 @@ function N(X, Y, H)
     }
 }
 
-// A = '@_Q_'
-// B = '@P_Q'
-// C = '@WU]'
-// D = '@_UU'
-// E = '@_DG'
-// F = ']UW'
-// G = ']U_'
-// H = '_AA'
-// I = '_U_'
-// J = '_UW'
-// K = '_UW'
-// L = '_UW'
-// M = '_UW'
-// N = '_UW'
-// O = '_UW'
-// P = '_UW'
-// Q = '_UW'
-// R = '_UW'
-// S = '_UW'
-// T = '_UW'
-// U = '_UW'
-// V = '_UW'
-// W = '_UW'
-// X = '_UW'
-// Y = '_UW'
-// Z = '_UW'
+H = '@@@@'+ //SPACE
+    '@@W@'+ //!
+    '@C@C'+ //"
+    '@_J_'+ //#
+    '@M_K'+ //$
+    '@SDY'+ //%
+    '@XU^'+ //&
+    '@@AB'+ //'
+    '@@QN'+ //(
+    '@NQ@'+ //)
+    '@UNU'+ //*
+    '@DND'+ //+
+    '@@HP'+ //,
+    '@DDD'+ //-
+    '@@H@'+ //.
+    '@ANP'+ ///
+    '@_Q_'+ //0
+    '@P_Q'+ //1
+    '@WU]'+ //2
+    '@_UU'+ //3
+    '@_DG'+ //4
+    '@]UW'+ //5
+    '@]U_'+ //6
+    '@_AA'+ //7
+    '@_U_'+ //8
+    '@_UW'+ //9
+    '@@J@'+ //:
+    '@@JP'+ //;
+    '@QJD'+ //<
+    '@JJJ'+ //=
+    '@DJQ'+ //>
+    '@GUA'+ //?
+    '@VQN'+ //@
+    '@_E_'+ //A
+    '@[U_'+ //B
+    '@QQN'+ //C
+    '@^Q_'+ //D
+    '@QU_'+ //E
+    '@AE_'+ //F
+    '@]Q^'+ //G
+    '@_D_'+ //H
+    '@Q_Q'+ //I
+    '@A_Q'+ //J
+    '@[D_'+ //K
+    '@PP_'+ //L
+    '@_C_'+ //M
+    '@^A_'+ //N
+    '@OQ^'+ //O
+    '@GE_'+ //P
+    '@VYN'+ //Q
+    '@[E_'+ //R
+    '@MUV'+ //S
+    '@A_A'+ //T
+    '@_PO'+ //U
+    '@OPO'+ //V
+    '@_X_'+ //W
+    '@[D['+ //X
+    '@_TW'+ //Y
+    '@SUY'+ //Z
+    '@@Q_'+ //[
+    '@PNA'+ //\
+    '@_Q@'+ //]
+    '@BAB'+ //^
+    '@PPP'+ //_
+    '@BA@'  //`
 
 // Print string I at X, Y.
 function T(X, Y, I)
@@ -138,9 +177,9 @@ function T(X, Y, I)
     Q = I.length
     for (V = Q; V--;)
     {
-        W = I.charCodeAt(V) - 64;
+        W = I.charCodeAt(V) - 32;
         for (U = 8*4; U--;)
-            ('@_Q_@P_Q@WU]@_UU@_DG@]UW@]U_@_AA@_U_@_UW@'
+            (H
             .charCodeAt(W*4 +(U>>3)) - 64) & 1<<(U&7)
             && D(X - (U>>3) + V * 4 + 3, Y + (U & 7));
     }
@@ -149,12 +188,12 @@ function T(X, Y, I)
 
 
 // Renders sprite type H at X, Y.
-function S(X, Y, H)
+function S(X, Y, I)
 {
     for (V = 8; V--;)
         for (U = 8; U--;)
             ('KMOOKMHAHAKMOOCL'
-            .charCodeAt(H * 16 + V * 2 + (U>>2)) - 64) & 1<<(U&3)
+            .charCodeAt(I * 16 + V * 2 + (U>>2)) - 64) & 1<<(U&3)
             && D(X - U + 7, Y + V);
 }
 
@@ -298,7 +337,7 @@ function calc_collision()
             y -= 1
             if (y < 1)
             {
-                g = 0;
+                g = 2;
             }
         }
     // f = 480
@@ -369,9 +408,13 @@ setInterval(function()
         N(10, 4, t);
         N(96, 4, s);
 
-        if (g == 0)
+        if (g != 1)
         {
-            T(32, 32, 'ABCDEF');
+            T(19, 90, 'PRESS SPACE BAR TO START');
+        }
+        if (g == 2)
+        {
+            T(47, 45, 'GAME OVER');
         }
 
         // draw player
