@@ -3,12 +3,11 @@ var Engine = Matter.Engine,
   Bodies = Matter.Bodies;
 
   var engine;
-  var box1;
   var world;
   var boxes = [];
   var ground;
 
-let synth, a4;
+let synth;
 
 function preload() {
   synth = new Tone.Synth({
@@ -51,10 +50,11 @@ function Box(x, y, w, h) {
 
 function mouseDragged() {
   boxes.push(new Box(mouseX, mouseY, 10, 10));
+  playA4();
 }
 
 function setup() {
-  createCanvas(400, 400);
+  createCanvas(800, 800);
 
   engine = Engine.create();
   world = engine.world;
@@ -68,10 +68,6 @@ function setup() {
   World.add(world, ground);
 
   synth.chain(Tone.Destination);
-
-  a4 = createButton("A4");
-  a4.position(100, 100);
-  a4.mousePressed(playA4);
 }
 
 function draw() {
