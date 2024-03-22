@@ -6,6 +6,7 @@ var Engine = Matter.Engine,
   var world;
   var boxes = [];
   var ground;
+  var ball;
 
 let synth;
 
@@ -18,38 +19,30 @@ function preload() {
 }
 
 function playA4() {
-    synth.triggerAttackRelease("A4", 0.1);
+    synth.triggerAttackRelease("A3", 0.1);
   }
 
-function Box(x, y, w, h) {
+
+function Ball(x, y, r) {
   var options = {
     friction: 0.5,
     restitution: 0.8,
-    angle: PI
   }
-  this.body = Bodies.rectangle(x, y, w, h, options);
-  this.w = w;
-  this.h = h;
+  this.body = Bodies.circle(x, y, r, options);
+  this.r = r;
   World.add(world, this.body);
 
   this.show = function() {
     var pos = this.body.position;
-    var angle = this.body.angle;
-
-    push();
-    stroke(200);
-    strokeWeight(2);
+    stroke(255);
+    strokeWeight(5);
     fill(255, 255, 255, 100);
-    translate(pos.x, pos.y);
-    rotate(angle);
     rectMode(CENTER);
-    rect(0, 0, this.w, this.h);
-    pop();
+    circle(pos.x, pos.y, this.r);
   }
 }
 
 function mouseDragged() {
-  boxes.push(new Box(mouseX, mouseY, 10, 10));
   playA4();
 }
 
@@ -62,24 +55,23 @@ function setup() {
   var options = {
     isStatic: true
   }
+
   stroke(255);
   strokeWeight(5);
-  ground = Bodies.rectangle(200, height, width, 10, options);
+  ground = Bodies.rectangle(width/2, height/2, width/2, height/40, options);
   World.add(world, ground);
+
+  ball = new Ball(width/2, 0, 10);
 
   synth.chain(Tone.Destination);
 }
 
 function draw() {
   background(10);
-  for (var i = 0; i < boxes.length; i++)
-  {
-      boxes[i].show();
-  }
-
+  ball.show();
   stroke(255);
   strokeWeight(5);
   rectMode(CENTER);
-  rect(200, height, width, 10);
+  rect(width/2, height/2, width/2, height/40);
 }
 
