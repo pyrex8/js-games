@@ -1,0 +1,280 @@
+<!--
+- z = left flipper
+- x = right flipper
+- c = ball launcher
+-->
+<html>
+<head><title>pinball</title></head>
+<body id=b style=width:100%;height:100%;margin:0;border:0;overflow:hidden;display:block>
+<canvas id=a style=background:#000000>
+<script>
+
+// image-rendering:pixelated;image-rendering:crisp-edges
+// js1024 shim
+'use strict';
+const c = a.getContext("2d");
+const d = document;
+window.devicePixelRatio || 1;
+
+function canvas_resize()
+{
+    a.style.width = window.innerWidth;
+    a.style.height = window.innerHeight;
+}
+
+window.addEventListener("resize", canvas_resize);
+canvas_resize();
+
+
+// constants (will be auto replace in minified)
+const SCALE = 4;
+const SCREEN_X = 128;
+const SCREEN_Y = 128;
+const TABLE_WIDTH = SCREEN_X * SCALE;
+const TABLE_HEIGHT = SCREEN_Y * SCALE;
+const PIXEL = 2;
+const MAX_BALL_HEIGHT = TABLE_HEIGHT;
+const CENTER = TABLE_WIDTH/2;
+const DOME_RADIUS = TABLE_WIDTH/4;
+const FLIPPER_SPACE = TABLE_WIDTH/9;
+const FLIPPER_HEIGHT = 10/12*TABLE_HEIGHT;
+const SHOOTER_HEIGHT = 120/128*TABLE_HEIGHT;
+const BUMPER_HEIGHT = 80/128*TABLE_HEIGHT;
+const SHOOTER_MAX_HEIGHT = TABLE_HEIGHT;
+const DOME_BOTH_RADIUS = DOME_RADIUS + SCALE;
+const FLIPPER_PIECES = 7;
+const DRAIN_PIECES = 6;
+const BUMPER_PIECES = 9
+const FLIPPER_COUNT = 2;
+const BALL_INDEX = FLIPPER_COUNT;
+const RESTITUTION = 1.3;
+const BUMPER_RESTITUTION = 1.7;
+const PHYSICS_SUBSTEPS = 9;
+
+const SIDE_LENGTH = TABLE_HEIGHT - DOME_BOTH_RADIUS;
+const SIDE_STEPS = Math.trunc(1/PIXEL*SIDE_LENGTH/SCALE);//92;
+const DOME_STEPS = 20; ///128*SCREEN_Y;//60;
+const DOME_STEP_ANGLE_RAD = (Math.PI /2) / DOME_STEPS; ///128*SCREEN_Y;//60;
+
+// PICO8 colors
+const TEAL         = '#125359';
+const GRAPE        = '#754665';
+const DARK_GREY    = '#5F574F';
+const MEDIUM_BLUE  = '#065AB5';
+const RASPBERRY    = '#BE1250';
+const BROWN        = '#AB5236';
+const DARK_GREEN   = '#008751';
+const INDIGO       = '#83769C';
+
+// object types
+const TYPE_WALL       = 0;
+const TYPE_BUMPER     = 1;
+
+// locals (remove from minified)
+let i, j, dx, dy, s, k, o, frame;
+
+// global variables
+let objects, score, ballCount, w, h;
+
+a.width = SCREEN_X * SCALE;
+a.height = SCREEN_Y * SCALE;
+
+// spawn object
+let makeObject =
+(
+    x, y,          // position
+    t,             // type and bumper strength
+    r=SCALE        // radius
+)=> objects.push({x, y, t, r, n:0, m:0});
+
+// int global variables
+objects = [ballCount = 3, 1];
+
+// make ball and init
+makeObject(frame = score = 0, MAX_BALL_HEIGHT);
+
+// flippers and shooter
+for(i = FLIPPER_PIECES; i--;)
+{
+    for(s=FLIPPER_COUNT;s--;)
+        makeObject();
+    makeObject(CENTER+DOME_RADIUS-SCALE,SHOOTER_MAX_HEIGHT, TYPE_WALL, SCALE);
+}
+
+// build symmetric table
+for(s=2;s--;)
+{
+    // side walls
+    for(i=SIDE_STEPS;i--;)
+        makeObject(CENTER+(s*2-1)*(DOME_RADIUS+SCALE),TABLE_HEIGHT-SCALE*PIXEL*i);
+
+    for(i=DOME_STEPS;i--;)
+    {
+        // top dome
+        makeObject(
+            CENTER+(s*2-1)*DOME_BOTH_RADIUS*Math.cos(i * DOME_STEP_ANGLE_RAD),
+            DOME_BOTH_RADIUS-DOME_BOTH_RADIUS*Math.sin(i * DOME_STEP_ANGLE_RAD));
+    }
+
+    for(i=DRAIN_PIECES;i--;)
+    {  
+        // flipper lane bottom
+        makeObject(CENTER + (s*2-1)*(FLIPPER_SPACE*2-i*SCALE*PIXEL),
+            FLIPPER_HEIGHT - DRAIN_PIECES*SCALE + i*SCALE);
+    }
+
+
+    for(i=BUMPER_PIECES;i--;)
+    {  
+        // bumper grid
+        makeObject(CENTER+(i%3*6*SCALE)*(s*2-1), BUMPER_HEIGHT-i%9*5*SCALE, TYPE_BUMPER, SCALE);
+    }
+}
+
+// main game loop
+const update = substep=>
+{
+    // update physics
+    for(substep = PHYSICS_SUBSTEPS; substep--;)
+    {
+        // flippers
+        for(s = FLIPPER_COUNT; s--;)
+        {
+            // control flipper angle
+            objects[s] = Math.max(-1, Math.min(1, 
+                objects[s] += objects['zx'[s]]? -.07 : .05));
+
+            // update flipper and shooter physics
+            for(i = FLIPPER_PIECES; i--;)
+            {
+                // update flippers
+                o = objects[1+FLIPPER_COUNT+s*FLIPPER_PIECES+i];
+                o.n = -o.x + (o.x = CENTER + (s*2-1) * 
+                    (FLIPPER_SPACE + SCALE*PIXEL - i*SCALE*PIXEL*Math.cos(objects[s]/2)));
+                o.m = -o.y + (o.y = FLIPPER_HEIGHT + i*SCALE*Math.sin(objects[s]/2));
+                o.r = SCALE;
+            }
+        }
+
+        // update shooter
+        o = objects[1+FLIPPER_COUNT+FLIPPER_COUNT*FLIPPER_PIECES];
+        o.y = Math.min(SHOOTER_MAX_HEIGHT+i,    // clamp shooter pos
+                o.y += o.m = objects['c'] ? .05 : // pull back shooter
+                (SHOOTER_HEIGHT+i-o.y)/19);       // shooter spring
+
+        // clear canvas and get ball
+        a.width |= o = objects[BALL_INDEX];
+
+        // update ball movement and gravity
+        o.x += o.n;
+        o.y += o.m += .0017;
+
+        // check if ball is out
+        if (o.y > MAX_BALL_HEIGHT && ballCount)
+        {
+            // respawn ball
+            o.x = CENTER+DOME_RADIUS-SCALE;
+            o.y = FLIPPER_HEIGHT-5*SCALE;
+            o.m = o.n = 0;
+            ballCount--;
+        }
+
+        // for each object
+        objects.map(p=>
+        {
+            c.fillStyle = BROWN;
+            // draw object
+            substep || // fix local var being created in minified
+                c.fillRect(p.x, p.y, PIXEL * SCALE, PIXEL * SCALE);
+
+            // get collision distance
+            k = Math.hypot(dx = o.x - p.x, dy = o.y - p.y);
+            
+            // relative velocity
+            i = p.n - o.n;
+            j = p.m - o.m;
+
+            // resolve collision
+            if (k - o.r - p.r < 0 & // is inside
+                i*dx + j*dy > 0 &   // moving towards
+                !(p.t & !o.n))      // can collide
+            {
+                // move outside collision
+                o.x -= (k - o.r - p.r) * dx / k;
+                o.y -= (k - o.r - p.r) * dy / k;
+
+                // tangent length
+                k *= k / (j * dx - i * dy);
+
+                // get restitution and update bumper
+                s =  !p.t | p.b ?  RESTITUTION :
+                (
+                    // start bounce animation
+                    p.b = 9,
+
+                    // don't give score for slingshots
+                    p.y > 600 ? 0 : 
+                    
+                    // apply score and award extra balls
+                    ++score % 64 || ++ballCount,
+
+                    // make it bouncy
+                    BUMPER_RESTITUTION
+                );
+
+                // reflect velocity and bounce
+                o.n += (i + dy / k) * s;
+                o.m += (j - dx / k) * s;
+            }
+        });
+    }
+
+    c.fillText('SCORE: ' + score, 10, 10);
+    c.fillText('BALLS: ' + ballCount, 10, 20);
+}
+
+// keyboard input
+onkeydown = e => objects[e.key] = 1;
+onkeyup   = e => objects[e.key] = 0;
+
+
+// enhanced rendering system for smoother frame rate
+let frameTimeLastMS = 0, frameTimeBufferMS=0;
+const updateAnimation = (frameTimeMS=0)=>
+{
+    requestAnimationFrame(updateAnimation);
+    
+    // update time keeping
+    let frameTimeDeltaMS = frameTimeMS - frameTimeLastMS;
+    frameTimeLastMS = frameTimeMS;
+    frameTimeBufferMS += frameTimeDeltaMS;
+    frameTimeBufferMS = Math.min(frameTimeBufferMS, 50);
+
+    // apply time delta smoothing, improves smoothness of framerate in some browsers
+    let deltaSmooth = 0;
+    if (frameTimeBufferMS < 0 && frameTimeBufferMS > -9)
+    {
+        // force an update each frame if time is close enough (not just a fast refresh rate)
+        deltaSmooth = frameTimeBufferMS;
+        frameTimeBufferMS = 0;
+    }
+    
+    // update multiple frames if necessary in case of slow framerate
+    for (;frameTimeBufferMS >= 0; frameTimeBufferMS -= 1e3 / 60)
+        update();
+
+    // add the time smoothing back in
+    frameTimeBufferMS += deltaSmooth;
+}
+
+updateAnimation();
+
+// // responsive canvas size
+// onresize = e => 
+// {
+//     a.width  = innerWidth;
+//     a.height = innerHeight;
+// }
+// onresize();
+
+</script>

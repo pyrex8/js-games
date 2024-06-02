@@ -89,7 +89,7 @@ function setup() {
   }
 
   stroke(255);
-  strokeWeight(5);
+  strokeWeight(2);
   ground = Bodies.rectangle(width/2, height/2, width/2, height/40, options);
   World.add(world, ground);
 
